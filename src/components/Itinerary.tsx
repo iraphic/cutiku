@@ -103,7 +103,7 @@ function ActivityItem({
                 <button
                   type="button"
                   onClick={() => {
-                    if (a.id) onSwap(a.id, alt);
+                    if (a.id && onSwap) onSwap(a.id, alt);
                     setOpen(false);
                   }}
                   className="flex w-full items-baseline justify-between gap-2 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-white"
@@ -137,12 +137,15 @@ function DayCard({
   photoInitial,
   profile,
   onSwap,
+  lang,
 }: {
   d: ItineraryDay;
   photoInitial: string;
   profile: ItinerarySegment["profile"];
   onSwap?: (id: string, next: Activity) => void;
+  lang: Language;
 }) {
+  const t = TEXT[lang].itinerary;
   return (
     <li className="relative pl-12 sm:pl-16">
       <span
@@ -174,7 +177,7 @@ function DayCard({
               {formatTemplate(t.dayLabel, { day: String(d.day) })}
               {d.transit && (
                 <span className="ml-2 rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-bold text-sky-700">
-                  {formatTemplate(t.transitTag, { city: d.city })}
+                  {formatTemplate(t.transitTag, { city: d.city ?? "" })}
                 </span>
               )}{" "}
               <span className="text-sm font-semibold text-night-800/55">
@@ -188,6 +191,7 @@ function DayCard({
                   a={a}
                   profile={profile}
                   onSwap={onSwap}
+                  lang={lang}
                 />
               ))}
             </ul>
@@ -240,6 +244,7 @@ export default function Itinerary({ segments, cityName, lang, onSwap }: Props) {
                 photoInitial={seg.city.charAt(0).toUpperCase() || cityName.charAt(0).toUpperCase()}
                 profile={seg.profile}
                 onSwap={onSwap}
+                lang={lang}
               />
             ))}
           </ol>

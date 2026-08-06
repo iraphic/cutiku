@@ -14,6 +14,7 @@ export const TEXT: Record<Language, {
     languageLabel: string;
     languageId: string;
     languageEn: string;
+    logoLabel: string;
   };
   hero: {
     badge: string;
@@ -33,21 +34,38 @@ export const TEXT: Record<Language, {
     style: string;
     decreaseLeaveDays: string;
     increaseLeaveDays: string;
+    styleOptions: {
+      santai: string;
+      padat: string;
+      explore: string;
+      santaiDesc: string;
+      padatDesc: string;
+      exploreDesc: string;
+    };
     origin: string;
     destination: string;
     destinationMulticity: string;
+    originPlaceholder: string;
+    destinationPlaceholder: string;
+    destinationMulticityPlaceholder: string;
     addButton: string;
     routeMulti: string;
     backToSingle: string;
     buildPlan: string;
+    building: string;
     resultSummary: string;
     holidayNearby: string;
+    emptyState: string;
     noRouteError: string;
     originRequired: string;
     destinationRequired: string;
     destinationDifferent: string;
     sameOriginStop: string;
     duplicateStop: string;
+    autocomplete: {
+      useOption: string;
+      freeNote: string;
+    };
     route: {
       originFallback: string;
       returnSuffix: string;
@@ -61,6 +79,8 @@ export const TEXT: Record<Language, {
     userChoice: string;
     suggested: string;
     selected: string;
+    sectionTitle: string;
+    sectionSubtitle: string;
     totalDaysOff: string;
     leaveDaysUsed: string;
     holidaysMore: string;
@@ -77,6 +97,7 @@ export const TEXT: Record<Language, {
     singleCityTitle: string;
     multiCityTitle: string;
     multiCitySubtitle: string;
+    dayLabel: string;
   };
   budget: {
     title: string;
@@ -101,6 +122,7 @@ export const TEXT: Record<Language, {
     localTransportLineCity: string;
     attractionTicketsLine: string;
     emergencyFundLine: string;
+    groundHint: string;
     totalLabel: string;
     footerNote: string;
     tableCaption: string;
@@ -184,7 +206,7 @@ export const TEXT: Record<Language, {
       building: "Menyusun rencana terbaikmu…",
       resultSummary: "{days} hari total · {workdays} hari kerja · {free} hari libur{holidays}",
       holidayNearby: "Tanggal merah terdekat:",
-      emptyResults:
+      emptyState:
         "Hasil rencanamu akan muncul di sini — usulan tanggal terbaik, itinerary harian, dan estimasi budget. 🌴",
       noRouteError: "Tambahkan minimal 1 kota tujuan ke rute.",
       originRequired: "Kota asal wajib diisi.",
@@ -228,6 +250,7 @@ export const TEXT: Record<Language, {
       singleCityTitle: "Itinerary {days} Hari di",
       multiCityTitle: "Itinerary {days} Hari",
       multiCitySubtitle: "{count} kota tujuan, hari perpindahan dihitung sebagai transit ringan",
+      dayLabel: "Hari {day}",
     },
     budget: {
       title: "Estimasi Budget",
@@ -271,6 +294,7 @@ export const TEXT: Record<Language, {
       empty:
         "Belum ada rencana tersimpan. Buat rencana lalu klik “Simpan Rencana” — tersimpan aman di browser-mu.",
       savedOn: "Disimpan {date}",
+      dateLocale: "id-ID",
       removeLabel: "Hapus rencana {label}",
       saveButton: "Simpan Rencana",
       saveSuccess: "Tersimpan ✓",
@@ -345,7 +369,7 @@ export const TEXT: Record<Language, {
       building: "Planning your best trip…",
       resultSummary: "{days} total days · {workdays} workdays · {free} holiday days{holidays}",
       holidayNearby: "Upcoming public holidays:",
-      emptyResults:
+      emptyState:
         "Your plan will appear here — best dates, a daily itinerary, and a full budget estimate. 🌴",
       noRouteError: "Add at least one destination city to the route.",
       originRequired: "Origin city is required.",
@@ -385,6 +409,11 @@ export const TEXT: Record<Language, {
       mealDetail: "Recommended dining in {city} ({priceRange}).",
       ticketLabel: "ticket approx {price}",
       transitTag: "Transit {city}",
+      transitDaySuffix: " + {count} transit days",
+      singleCityTitle: "{days}-Day Itinerary in",
+      multiCityTitle: "{days}-Day Itinerary",
+      multiCitySubtitle: "{count} destination cities, travel days count as light transit",
+      dayLabel: "Day {day}",
     },
     budget: {
       title: "Budget Estimate",

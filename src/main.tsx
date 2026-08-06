@@ -138,7 +138,7 @@ function App() {
       route: payload.route && payload.route.length > 0 ? payload.route : [],
       style: payload.style ?? "padat",
     });
-    if (payload.overrides) newPlan.overrides = payload.overrides;
+    if (payload.overrides) newPlan.overrides = payload.overrides as any;
     setRestoreInitial({
       days: payload.days,
       startDate: payload.startDate,

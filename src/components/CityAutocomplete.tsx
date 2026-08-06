@@ -13,7 +13,7 @@ interface Props {
   lang: Language;
 }
 
-export default function CityAutocomplete({ id, label, value, onChange, placeholder, invalid }: Props) {
+export default function CityAutocomplete({ id, label, value, onChange, placeholder, invalid, lang }: Props) {
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
   const [options, setOptions] = useState<City[]>([]);

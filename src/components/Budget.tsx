@@ -86,32 +86,35 @@ export default function Budget({ budget, tier, onTierChange, lang }: Props) {
           <div className="mb-4 space-y-2">
             {budget.hotels
               .filter((h) => h.nights > 0)
-              .map((h) => (
-                <div
-                  key={h.city}
-                  className="rounded-xl bg-plum-500/[0.07] px-4 py-2.5 text-sm font-semibold text-plum-700"
-                >
-                  <span className="flex items-center gap-2">
-                    <BedDouble className="size-4 shrink-0" aria-hidden />
-                    <span>
-                      {formatTemplate(t.hotelLineCity, {
-                        tier: TEXT[lang].budget.hotelTier[tier],
-                        city: h.city,
-                        nights: h.nights,
-                      })}
+              .map((h) => {
+                const suggestion = h.suggestions?.find((s) => s.tier === tier);
+                return (
+                  <div
+                    key={h.city}
+                    className="rounded-xl bg-plum-500/[0.07] px-4 py-2.5 text-sm font-semibold text-plum-700"
+                  >
+                    <span className="flex items-center gap-2">
+                      <BedDouble className="size-4 shrink-0" aria-hidden />
+                      <span>
+                        {formatTemplate(t.hotelLineCity, {
+                          tier: TEXT[lang].budget.hotelTier[tier],
+                          city: h.city,
+                          nights: h.nights,
+                        })}
+                      </span>
                     </span>
-                  </span>
-                  {h.suggestion && (
-                    <span className="mt-1 flex items-center gap-1.5 pl-6 text-xs font-bold text-plum-600">
-                      <Star className="size-3.5 shrink-0 fill-amber-400 text-amber-400" aria-hidden />
-                      {formatTemplate(t.defaultHotel, {
-                        name: h.suggestion.name,
-                        stars: h.suggestion.stars,
-                      })}
-                    </span>
-                  )}
-                </div>
-              ))}
+                    {suggestion && (
+                      <span className="mt-1 flex items-center gap-1.5 pl-6 text-xs font-bold text-plum-600">
+                        <Star className="size-3.5 shrink-0 fill-amber-400 text-amber-400" aria-hidden />
+                        {formatTemplate(t.defaultHotel, {
+                          name: suggestion.name,
+                          stars: suggestion.stars,
+                        })}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
           </div>
         ) : (
           <div className="mb-4 rounded-xl bg-plum-500/[0.07] px-4 py-2.5 text-sm font-semibold text-plum-700">
