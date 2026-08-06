@@ -1,14 +1,17 @@
 import type { DateOption } from "#/lib/planner";
 import { formatRange, parseISO, formatShortYear } from "#/lib/dateUtils";
+import { TEXT, type Language, formatTemplate } from "#/lib/i18n";
 import { BadgeCheck, Calendar, CheckCircle2 } from "lucide-react";
 
 interface Props {
   options: DateOption[];
   selectedId: string;
   onSelect: (id: string) => void;
+  lang: Language;
 }
 
-export default function DateOptions({ options, selectedId, onSelect }: Props) {
+export default function DateOptions({ options, selectedId, onSelect, lang }: Props) {
+  const t = TEXT[lang].dateOptions;
   const bestId = options.reduce((a, b) => (b.score > a.score ? b : a)).id;
 
   return (
@@ -30,14 +33,14 @@ export default function DateOptions({ options, selectedId, onSelect }: Props) {
           >
             {isBest && (
               <span className="absolute -top-3 right-4 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-sunset-500 to-plum-600 px-3 py-1 text-[11px] font-extrabold text-white shadow-md">
-                <BadgeCheck className="size-3.5" aria-hidden /> Paling Efektif
+                <BadgeCheck className="size-3.5" aria-hidden /> {t.suggested}
               </span>
             )}
             <span className="mb-1 flex items-center justify-between gap-2">
               <span className="text-xs font-bold tracking-wide text-night-800/50 uppercase">
-                {opt.isUserChoice ? "Tanggal Pilihanmu" : "Usulan CutiKu"}
+                {opt.isUserChoice ? t.userChoice : t.suggested}
               </span>
-              {selected && <CheckCircle2 className="size-5 text-plum-600" aria-label="Terpilih" />}
+              {selected && <CheckCircle2 className="size-5 text-plum-600" aria-label={lang === "id" ? "Terpilih" : "Selected"} />}
             </span>
             <span className="block text-lg font-extrabold text-night-900">
               {formatRange(opt.start, opt.end)}
@@ -75,7 +78,7 @@ export default function DateOptions({ options, selectedId, onSelect }: Props) {
                 ))}
                 {opt.holidaysCovered.length > 3 && (
                   <span className="rounded-full bg-night-900/[0.045] px-2.5 py-1 text-[11px] font-semibold text-night-800">
-                    +{opt.holidaysCovered.length - 3} lagi
+                    {formatTemplate(t.holidaysMore, { count: opt.holidaysCovered.length - 3 })}
                   </span>
                 )}
               </span>

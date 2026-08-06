@@ -10,6 +10,7 @@ import Hero from "#/components/Hero";
 import Itinerary from "#/components/Itinerary";
 import SavedPlans from "#/components/SavedPlans";
 import TripForm, { type FormValue } from "#/components/TripForm";
+import { TEXT, type Language } from "#/lib/i18n";
 import { findCity } from "#/data/cities";
 import { guessCountry } from "#/data/pricing";
 import { useReveal } from "#/hooks/useReveal";
@@ -35,6 +36,7 @@ function App() {
   const [plan, setPlan] = useState<TripPlan | null>(null);
   const [selectedOptionId, setSelectedOptionId] = useState<string>("");
   const [tier, setTier] = useState<HotelTier>("mid");
+  const [lang, setLang] = useState<Language>("id");
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState<SavedPlan[]>(() => loadPlans());
   const [justSaved, setJustSaved] = useState(false);
@@ -153,8 +155,8 @@ function App() {
 
   return (
     <main className="min-h-[100dvh] bg-[#f7f4ff] font-sans text-night-900" id="application-root">
-      <Header />
-      <Hero />
+      <Header lang={lang} onLanguageChange={setLang} />
+      <Hero lang={lang} />
 
       <div className="pb-20">
         <TripForm
@@ -162,6 +164,7 @@ function App() {
           onSubmit={handleSubmit}
           loading={loading}
           initial={restoreInitial}
+          lang={lang}
         />
 
         {/* HASIL */}
@@ -173,8 +176,7 @@ function App() {
         >
           {!plan && !loading && (
             <p className="rounded-2xl border-2 border-dashed border-plum-500/25 bg-white/60 px-6 py-10 text-center text-sm font-semibold text-night-800/55">
-              Hasil rencanamu akan muncul di sini — usulan tanggal terbaik, itinerary harian,
-              dan estimasi budget. 🌴
+              {TEXT[lang].form.emptyState}
             </p>
           )}
 
@@ -188,11 +190,10 @@ function App() {
                   </span>
                   <div>
                     <h2 className="text-xl font-extrabold tracking-tight text-night-900 sm:text-2xl">
-                      Usulan Tanggal Terbaik
+                      {TEXT[lang].dateOptions.sectionTitle}
                     </h2>
                     <p className="text-sm text-night-800/60">
-                      Berdasarkan kalender libur nasional Indonesia 2025–2026. Klik kartu untuk
-                      memilih.
+                      {TEXT[lang].dateOptions.sectionSubtitle}
                     </p>
                   </div>
                 </div>
@@ -200,6 +201,7 @@ function App() {
                   options={plan.options}
                   selectedId={selectedOption.id}
                   onSelect={setSelectedOptionId}
+                  lang={lang}
                 />
               </div>
 
@@ -213,12 +215,12 @@ function App() {
                     <div>
                       <h2 className="text-xl font-extrabold tracking-tight text-night-900 sm:text-2xl">
                         {plan.profiles
-                          ? `Itinerary ${plan.input.days} Hari: ${plan.input.origin.name} ⇄ ${plan.profiles.map((p) => p.city).join(" → ")}`
-                          : `Itinerary ${plan.input.days} Hari di ${plan.profile.city}`}
+                          ? `${TEXT[lang].itinerary.multiCityTitle.replace("{days}", String(plan.input.days))}: ${plan.input.origin.name} ⇄ ${plan.profiles.map((p) => p.city).join(" → ")}`
+                          : `${TEXT[lang].itinerary.singleCityTitle.replace("{days}", String(plan.input.days))} ${plan.profile.city}`}
                       </h2>
                       <p className="text-sm text-night-800/60">
                         {plan.profiles
-                          ? `${plan.profiles.length} kota tujuan, hari perpindahan dihitung sebagai transit ringan`
+                          ? TEXT[lang].itinerary.multiCitySubtitle.replace("{count}", String(plan.profiles.length))
                           : plan.profile.tagline}{" "}
                         · {formatRange(selectedOption.start, selectedOption.end)}
                       </p>
@@ -234,13 +236,13 @@ function App() {
                     {justSaved ? "Tersimpan ✓" : "Simpan Rencana"}
                   </button>
                 </div>
-                <Itinerary segments={segments} cityName={plan.profile.city} />
+                <Itinerary segments={segments} cityName={plan.profile.city} lang={lang} onSwap={handleSwap} />
               </div>
 
               {/* Budget */}
               {budget && (
                 <div ref={revealBudget.ref} className={revealBudget.className}>
-                  <Budget budget={budget} tier={tier} onTierChange={setTier} />
+                  <Budget budget={budget} tier={tier} onTierChange={setTier} lang={lang} />
                 </div>
               )}
             </div>
@@ -251,12 +253,13 @@ function App() {
               plans={saved}
               onLoad={handleLoadSaved}
               onDelete={(id) => setSaved(deletePlan(id))}
+              lang={lang}
             />
           </div>
         </div>
       </div>
 
-      <Footer />
+      <Footer lang={lang} />
     </main>
   );
 }

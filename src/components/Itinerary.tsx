@@ -2,6 +2,7 @@ import type { Activity, ItineraryDay, ItinerarySegment } from "#/lib/planner";
 import { alternativesFor } from "#/lib/planner";
 import { formatDayName, formatShortYear } from "#/lib/dateUtils";
 import { formatIDR } from "#/data/pricing";
+import { formatTemplate, TEXT, type Language } from "#/lib/i18n";
 import { BusFront, Moon, RefreshCw, Sun, Sunrise, Sunset } from "lucide-react";
 import { useState } from "react";
 
@@ -40,11 +41,14 @@ function ActivityItem({
   a,
   profile,
   onSwap,
+  lang,
 }: {
   a: Activity;
   profile: ItinerarySegment["profile"];
+  lang: Language;
   onSwap?: (id: string, next: Activity) => void;
 }) {
+  const t = TEXT[lang].itinerary;
   const [open, setOpen] = useState(false);
   const Icon = TIME_ICON[a.time];
   const swappable = !a.locked && !!onSwap;
@@ -71,13 +75,13 @@ function ActivityItem({
           {a.title}
           {a.ticket > 0 && (
             <span className="ml-2 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700">
-              tiket ±{formatIDR(a.ticket)}
+              {formatTemplate(t.ticketLabel, { price: formatIDR(a.ticket) })}
             </span>
           )}
           {swappable && (
             <button
               type="button"
-              aria-label={`Ganti aktivitas ${a.time.toLowerCase()}: ${a.title}`}
+              aria-label={formatTemplate(t.replaceActivity, { time: a.time, title: a.title })}
               aria-expanded={open}
               onClick={() => setOpen((o) => !o)}
               className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold transition-colors ${
@@ -87,7 +91,7 @@ function ActivityItem({
               }`}
             >
               <RefreshCw className="size-3" aria-hidden />
-              Ganti
+              {t.swapLabel}
             </button>
           )}
         </p>
@@ -110,7 +114,7 @@ function ActivityItem({
                   </span>
                   {alt.ticket > 0 && (
                     <span className="shrink-0 text-xs font-bold whitespace-nowrap text-emerald-700">
-                      ±{formatIDR(alt.ticket)}
+                      {formatTemplate(t.ticketLabel, { price: formatIDR(alt.ticket) })}
                     </span>
                   )}
                 </button>
@@ -120,7 +124,7 @@ function ActivityItem({
         )}
         {open && alternatives.length === 0 && (
           <p className="mt-2 rounded-xl bg-night-900/[0.04] px-3 py-2 text-xs font-medium text-night-800/55">
-            Belum ada alternatif lain untuk slot ini di kota {profile.city}.
+            {formatTemplate(t.noAlternatives, { city: profile.city })}
           </p>
         )}
       </div>
@@ -167,10 +171,10 @@ function DayCard({
           {/* Aktivitas */}
           <div className="min-w-0 flex-1">
             <h3 className="text-lg font-extrabold text-night-900">
-              Hari {d.day}
+              {formatTemplate(t.dayLabel, { day: String(d.day) })}
               {d.transit && (
                 <span className="ml-2 rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-bold text-sky-700">
-                  Transit {d.city}
+                  {formatTemplate(t.transitTag, { city: d.city })}
                 </span>
               )}{" "}
               <span className="text-sm font-semibold text-night-800/55">
@@ -197,16 +201,17 @@ function DayCard({
 interface Props {
   segments: ItinerarySegment[];
   cityName: string;
+  lang: Language;
   onSwap?: (id: string, next: Activity) => void;
 }
 
-export default function Itinerary({ segments, cityName, onSwap }: Props) {
+export default function Itinerary({ segments, cityName, lang, onSwap }: Props) {
+  const t = TEXT[lang].itinerary;
   return (
     <div className="space-y-10">
       {onSwap && (
         <p className="-mb-4 rounded-xl bg-plum-500/[0.06] px-4 py-2.5 text-xs font-semibold text-plum-700">
-          💡 Setiap aktivitas bisa diganti — klik tombol <strong>Ganti</strong> pada slot untuk
-          melihat usulan alternatif. Estimasi tiket & budget ikut diperbarui.
+          {t.swapHint}
         </p>
       )}
       {segments.map((seg, segIdx) => (

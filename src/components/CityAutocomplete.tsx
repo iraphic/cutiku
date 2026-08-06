@@ -1,4 +1,5 @@
 import { searchCities, type City } from "#/data/cities";
+import { formatTemplate, TEXT, type Language } from "#/lib/i18n";
 import { MapPin, PencilLine } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 
@@ -9,6 +10,7 @@ interface Props {
   onChange: (value: string, city?: City) => void;
   placeholder?: string;
   invalid?: boolean;
+  lang: Language;
 }
 
 export default function CityAutocomplete({ id, label, value, onChange, placeholder, invalid }: Props) {
@@ -19,6 +21,7 @@ export default function CityAutocomplete({ id, label, value, onChange, placehold
   const listId = useId();
 
   const trimmed = value.trim();
+  const t = TEXT[lang].form.autocomplete;
   const exactMatch = options.some((ct) => ct.name.toLowerCase() === trimmed.toLowerCase());
   // Entri bebas: teks non-kosong yang tidak persis cocok dengan daftar
   const freeTextOption = trimmed.length > 0 && !exactMatch;
@@ -133,12 +136,12 @@ export default function CityAutocomplete({ id, label, value, onChange, placehold
               >
                 <PencilLine className="size-4 shrink-0 text-plum-500" aria-hidden />
                 <span className="min-w-0">
-                  <span className="block truncate font-semibold text-night-900">
-                    Gunakan &ldquo;{trimmed}&rdquo;
-                  </span>
-                  <span className="block truncate text-xs text-night-800/60">
-                    Destinasi bebas — CutiKu menyusun rencana dengan profil generik
-                  </span>
+                          <span className="block truncate font-semibold text-night-900">
+                      {formatTemplate(t.useOption, { value: trimmed })}
+                    </span>
+                    <span className="block truncate text-xs text-night-800/60">
+                      {t.freeNote}
+                    </span>
                 </span>
               </button>
             </li>

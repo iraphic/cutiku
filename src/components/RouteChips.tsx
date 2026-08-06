@@ -1,5 +1,6 @@
 import { findCity, type City } from "#/data/cities";
 import { guessCountry } from "#/data/pricing";
+import { TEXT, formatTemplate, type Language } from "#/lib/i18n";
 import { ArrowDown, ArrowUp, GripVertical, X } from "lucide-react";
 
 export interface RouteStop {
@@ -12,12 +13,14 @@ interface Props {
   originName: string;
   stops: RouteStop[];
   invalid?: boolean;
+  lang: Language;
   onRemove: (key: string) => void;
   onMove: (key: string, dir: -1 | 1) => void;
 }
 
 /** Visualisasi rute: Asal → Kota 1 → Kota 2 → … dengan chip yang bisa dihapus & disusun ulang. */
-export default function RouteChips({ originName, stops, invalid, onRemove, onMove }: Props) {
+export default function RouteChips({ originName, stops, invalid, lang, onRemove, onMove }: Props) {
+  const t = TEXT[lang].form.route;
   return (
     <div
       className={`flex flex-wrap items-center gap-2 rounded-xl border-2 border-dashed px-3 py-2.5 ${
@@ -25,7 +28,7 @@ export default function RouteChips({ originName, stops, invalid, onRemove, onMov
       }`}
     >
       <span className="inline-flex items-center gap-1.5 rounded-full bg-night-900 px-3 py-1.5 text-xs font-bold text-white shadow-sm">
-        {originName.trim() || "Kota asal"}
+        {originName.trim() || t.originFallback}
       </span>
       {stops.map((stop, i) => (
         <span key={stop.key} className="flex items-center gap-2">
@@ -41,7 +44,7 @@ export default function RouteChips({ originName, stops, invalid, onRemove, onMov
             <span className="flex items-center">
               <button
                 type="button"
-                aria-label={`Pindahkan ${stop.name} lebih awal`}
+                aria-label={formatTemplate(t.moveEarlier, { city: stop.name })}
                 disabled={i === 0}
                 onClick={() => onMove(stop.key, -1)}
                 className="grid size-6 place-items-center rounded-full text-night-800/50 transition-colors hover:bg-plum-500/10 hover:text-plum-600 disabled:opacity-30"
@@ -50,7 +53,7 @@ export default function RouteChips({ originName, stops, invalid, onRemove, onMov
               </button>
               <button
                 type="button"
-                aria-label={`Pindahkan ${stop.name} lebih akhir`}
+                aria-label={formatTemplate(t.moveLater, { city: stop.name })}
                 disabled={i === stops.length - 1}
                 onClick={() => onMove(stop.key, 1)}
                 className="grid size-6 place-items-center rounded-full text-night-800/50 transition-colors hover:bg-plum-500/10 hover:text-plum-600 disabled:opacity-30"
@@ -59,7 +62,7 @@ export default function RouteChips({ originName, stops, invalid, onRemove, onMov
               </button>
               <button
                 type="button"
-                aria-label={`Hapus ${stop.name} dari rute`}
+                aria-label={formatTemplate(t.removeFromRoute, { city: stop.name })}
                 onClick={() => onRemove(stop.key)}
                 className="grid size-6 place-items-center rounded-full text-night-800/50 transition-colors hover:bg-red-50 hover:text-red-600"
               >
@@ -75,13 +78,13 @@ export default function RouteChips({ originName, stops, invalid, onRemove, onMov
             →
           </span>
           <span className="inline-flex items-center rounded-full bg-night-900/10 px-3 py-1.5 text-xs font-bold text-night-800/70">
-            {originName.trim() || "Kota asal"} (pulang)
+            {originName.trim() || t.originFallback}{t.returnSuffix}
           </span>
         </>
       )}
       {stops.length === 0 && (
         <span className="text-xs font-medium text-night-800/45">
-          Tambahkan kota tujuan untuk membangun rute perjalananmu.
+          {t.emptyHint}
         </span>
       )}
     </div>

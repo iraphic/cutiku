@@ -1,3 +1,5 @@
+import type { TravelStyle } from "#/lib/planner";
+
 export interface SavedPlan {
   id: string;
   label: string;
@@ -10,6 +12,8 @@ export interface SavedPlan {
     destinationCountry: string;
     /** Rute kota tujuan berurutan (mode multi-kota) */
     route?: { name: string; country: string }[];
+    style?: TravelStyle;
+    overrides?: Record<string, unknown>;
   };
 }
 

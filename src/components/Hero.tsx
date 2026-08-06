@@ -1,6 +1,12 @@
 import { Cloud, Plane } from "lucide-react";
+import { TEXT, type Language } from "#/lib/i18n";
 
-export default function Hero() {
+interface Props {
+  lang: Language;
+}
+
+export default function Hero({ lang }: Props) {
+  const t = TEXT[lang].hero;
   return (
     <section
       id="atas"
@@ -26,44 +32,38 @@ export default function Hero() {
       <div className="relative mx-auto w-full max-w-6xl px-4 py-28 sm:px-6">
         <div className="max-w-2xl">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm font-semibold text-white backdrop-blur-sm">
-            ✈️ Libur nasional 2025–2026 sudah terpasang
+            {t.badge}
           </p>
           <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-white drop-shadow-sm sm:text-6xl sm:leading-[1.1]">
-            Rencanakan Cuti Impianmu,{" "}
+            {t.titleLine1}{" "}
             <span className="bg-gradient-to-r from-yellow-200 to-sunset-100 bg-clip-text text-transparent">
-              Tanpa Ribet.
+              {t.titleLine2}
             </span>
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
-            Pilih lama cuti, tanggal, dan kota tujuan. CutiKu menghitung tanggal paling
-            efektif berdasarkan tanggal merah, menyusun itinerary harian, dan menaksir
-            budget lengkap dalam Rupiah.
+            {t.description}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a
               href="#form"
               className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-base font-bold text-plum-700 shadow-xl shadow-night-900/20 transition-transform hover:scale-[1.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              Mulai Merencanakan
+              {t.ctaStart}
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </a>
             <a
               href="#tentang"
               className="inline-flex items-center rounded-full border-2 border-white/40 px-7 py-3.5 text-base font-bold text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              Cara Kerja
+              {t.ctaHow}
             </a>
           </div>
           <dl className="mt-12 grid max-w-md grid-cols-3 gap-4 text-white">
-            {[
-              ["140+", "Kota tujuan"],
-              ["50+", "Tanggal merah"],
-              ["3", "Opsi terbaik"],
-            ].map(([num, label]) => (
-              <div key={label} className="rounded-2xl bg-white/10 p-3 text-center backdrop-blur-sm">
-                <dt className="sr-only">{label}</dt>
-                <dd className="text-2xl font-extrabold">{num}</dd>
-                <dd className="text-xs font-medium text-white/75">{label}</dd>
+            {t.stats.map((stat) => (
+              <div key={stat.label} className="rounded-2xl bg-white/10 p-3 text-center backdrop-blur-sm">
+                <dt className="sr-only">{stat.label}</dt>
+                <dd className="text-2xl font-extrabold">{stat.value}</dd>
+                <dd className="text-xs font-medium text-white/75">{stat.label}</dd>
               </div>
             ))}
           </dl>

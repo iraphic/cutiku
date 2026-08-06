@@ -557,6 +557,21 @@ export function estimateBudget(
     ? { label: ground.label, price: [jitter(seed + "g0", ground.price[0]), jitter(seed + "g1", ground.price[1])] as [number, number] }
     : undefined;
 
+  const routeLegs = legTransports(origin.name, origin.country, destinationName, destinationCountry).map((o) => ({
+    label: o.label,
+    price: [
+      jitter(seed + "|" + o.label + "0", o.price[0]),
+      jitter(seed + "|" + o.label + "1", o.price[1]),
+    ] as [number, number],
+    duration: o.duration,
+    primary: o.primary,
+  }));
+
+  const legs: LegCost[] | undefined =
+    routeLegs.length > 0
+      ? [{ from: origin.name, to: destinationName, options: routeLegs }]
+      : undefined;
+
   const meals: [number, number] = [
     jitter(seed + "m0", pricing.meals[0] * days),
     jitter(seed + "m1", pricing.meals[1] * days),
@@ -579,16 +594,26 @@ export function estimateBudget(
   const bufferRate = 0.1;
   const hotelCost = (tier: HotelTier) => hotelPerNight[tier] * nights;
 
+  const chooseLegCost = (tier: HotelTier) =>
+    legs?.[0]
+      ? chooseLegOption(legs[0], tier)?.price ?? flight
+      : flight;
+
   const total = (tier: HotelTier) => {
-    const min = Math.round((flight[0] + hotelCost(tier) + meals[0] + localTransport[0] + attractionTickets) * (1 + bufferRate));
-    const max = Math.round((flight[1] + hotelCost(tier) + meals[1] + localTransport[1] + attractionTickets) * (1 + bufferRate));
+    const legCost = chooseLegCost(tier);
+    const min = Math.round((legCost[0] + hotelCost(tier) + meals[0] + localTransport[0] + attractionTickets) * (1 + bufferRate));
+    const max = Math.round((legCost[1] + hotelCost(tier) + meals[1] + localTransport[1] + attractionTickets) * (1 + bufferRate));
     return { min, max };
   };
 
   const rows = (tier: HotelTier) => {
     const hc = hotelCost(tier);
+    const legCost = chooseLegCost(tier);
+    const flightLabel = legs?.[0]
+      ? `Transport PP — ${chooseLegOption(legs[0], tier)?.label ?? "transport"} (${origin.name} ⇄ ${destinationName})`
+      : `Transport PP — pesawat (${origin.name} ⇄ ${destinationName})`;
     const base: BudgetRow[] = [
-      { label: `Transport PP — ${flight[0] > 0 ? "pesawat" : "transport"} (${origin.name} ⇄ ${destinationName})`, min: flight[0], max: flight[1] },
+      { label: flightLabel, min: legCost[0], max: legCost[1] },
       { label: `Hotel ${tierLabel(tier)} — ${nights} malam`, min: hc, max: hc },
       { label: `Makan — ${days} hari`, min: meals[0], max: meals[1] },
       { label: "Transport lokal", min: localTransport[0], max: localTransport[1] },
@@ -604,18 +629,30 @@ export function estimateBudget(
     return base;
   };
 
+  const hotels: CityHotel[] = [
+    {
+      city: destinationName,
+      nights,
+      perNight: hotelPerNight,
+      suggestions: getProfile(destinationName).hotels,
+    },
+  ];
+
   return {
-    flightLabel: "Pesawat PP (estimasi OTA)",
+    flightLabel: legs?.[0]
+      ? `Transport PP — ${chooseLegOption(legs[0], "mid")?.label ?? "transport"}`
+      : "Pesawat PP (estimasi OTA)",
     flight,
     ground: groundJittered,
     hotelPerNight,
-    // Default hotel suggestion (choose mid if no tier context available)
     hotelSuggestion: getProfile(destinationName).hotels.find((s) => s.tier === "mid"),
     nights,
     meals,
     localTransport,
     attractionTickets,
     bufferRate,
+    legs,
+    hotels,
     total,
     rows,
   };

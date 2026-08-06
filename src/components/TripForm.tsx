@@ -3,6 +3,7 @@ import { findCity } from "#/data/cities";
 import { HOLIDAYS, holidayOn } from "#/data/holidays";
 import { guessCountry } from "#/data/pricing";
 import { addDays, formatRange, formatShortYear, isWeekend, parseISO, toISODate } from "#/lib/dateUtils";
+import { formatTemplate, TEXT, type Language } from "#/lib/i18n";
 import type { TravelStyle } from "#/lib/planner";
 import { CalendarDays, ListPlus, Minus, Plus, Route, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -20,12 +21,6 @@ export interface FormValue {
   style: TravelStyle;
 }
 
-const STYLES: { id: TravelStyle; label: string; desc: string }[] = [
-  { id: "santai", label: "Santai", desc: "Aktivitas lebih sedikit & fleksibel, banyak waktu bebas" },
-  { id: "padat", label: "Padat", desc: "Itinerary penuh pagi–malam, seimbang" },
-  { id: "explore", label: "Full Explore", desc: "Maksimalkan destinasi, termasuk day trip" },
-];
-
 interface Props {
   onSubmit: (value: FormValue) => void;
   loading: boolean;
@@ -37,9 +32,10 @@ interface Props {
     route?: { name: string; country: string }[];
     style?: TravelStyle;
   } | null;
+  lang: Language;
 }
 
-export default function TripForm({ onSubmit, loading, initial }: Props) {
+export default function TripForm({ onSubmit, loading, initial, lang }: Props) {
   const todayISO = toISODate(new Date());
   const [days, setDays] = useState(initial?.days ?? 5);
   const [startISO, setStartISO] = useState(initial?.startDate ?? todayISO);
@@ -58,6 +54,13 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
   const [destCity, setDestCity] = useState<City | undefined>(undefined);
   const [style, setStyle] = useState<TravelStyle>(initial?.style ?? "padat");
   const [errors, setErrors] = useState<{ origin?: string; destination?: string }>({});
+  const t = TEXT[lang].form;
+
+  const styleOptions = [
+    { id: "santai" as const, label: t.styleOptions.santai, desc: t.styleOptions.santaiDesc },
+    { id: "padat" as const, label: t.styleOptions.padat, desc: t.styleOptions.padatDesc },
+    { id: "explore" as const, label: t.styleOptions.explore, desc: t.styleOptions.exploreDesc },
+  ];
 
   const start = useMemo(() => parseISO(startISO || todayISO), [startISO, todayISO]);
   const end = addDays(start, days - 1);
@@ -92,11 +95,11 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
     const name = addText.trim();
     if (!name) return;
     if (sameCity(name, originText)) {
-      setAddError("Kota tujuan tidak boleh sama dengan kota asal.");
+      setAddError(t.sameOriginStop);
       return;
     }
     if (stops.some((s) => sameCity(s.name, name))) {
-      setAddError("Kota ini sudah ada di rute perjalananmu.");
+      setAddError(t.duplicateStop);
       return;
     }
     setStops((s) => [...s, resolveStop(name, addCity)]);
@@ -120,16 +123,16 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const errs: { origin?: string; destination?: string } = {};
-    if (!originText.trim()) errs.origin = "Kota asal wajib diisi.";
+    if (!originText.trim()) errs.origin = t.originRequired;
     if (multiMode) {
-      if (stops.length === 0) errs.destination = "Tambahkan minimal 1 kota tujuan ke rute.";
+      if (stops.length === 0) errs.destination = t.noRouteError;
       else if (stops.some((s) => sameCity(s.name, originText))) {
-        errs.destination = "Kota tujuan tidak boleh sama dengan kota asal.";
+        errs.destination = t.sameOriginStop;
       }
     } else {
-      if (!destText.trim()) errs.destination = "Kota tujuan wajib diisi.";
+      if (!destText.trim()) errs.destination = t.destinationRequired;
       else if (sameCity(destText, originText)) {
-        errs.destination = "Kota tujuan harus berbeda dari kota asal.";
+        errs.destination = t.destinationDifferent;
       }
     }
     setErrors(errs);
@@ -183,14 +186,11 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
           </span>
           <div>
             <h2 className="text-xl font-extrabold tracking-tight text-night-900 sm:text-2xl">
-              Atur Rencana Cutimu
+              {t.title}
             </h2>
-            <p className="text-sm text-night-800/60">
-              Isi 4 hal di bawah — sisanya biar CutiKu yang mikir.
-            </p>
+            <p className="text-sm text-night-800/60">{t.subtitle}</p>
           </div>
         </div>
-
         <form
           onSubmit={submit}
           noValidate
@@ -206,16 +206,16 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
             }
           }}
         >
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             {/* Lama cuti */}
             <div>
               <span id="lbl-days" className="mb-1.5 block text-sm font-bold text-night-800">
-                Lama Cuti
+                {t.days}
               </span>
               <div className="flex items-stretch gap-2">
                 <button
                   type="button"
-                  aria-label="Kurangi hari cuti"
+                  aria-label={lang === "id" ? "Kurangi hari cuti" : "Reduce leave days"}
                   onClick={() => setDays((d) => clampDays(d - 1))}
                   disabled={days <= 1}
                   className="grid w-12 place-items-center rounded-xl border-2 border-plum-500/15 bg-white text-plum-600 shadow-sm transition-colors hover:bg-plum-500/5 disabled:opacity-40"
@@ -236,11 +236,11 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
                   className="flex flex-1 flex-col items-center justify-center rounded-xl border-2 border-plum-500/15 bg-gradient-to-br from-sunset-50 to-white py-2 shadow-sm focus-visible:outline-2 focus-visible:outline-plum-500"
                 >
                   <span className="text-2xl font-extrabold text-night-900 tabular-nums">{days}</span>
-                  <span className="text-xs font-semibold text-night-800/55">hari</span>
+                  <span className="text-xs font-semibold text-night-800/55">{t.dayLabel}</span>
                 </div>
                 <button
                   type="button"
-                  aria-label="Tambah hari cuti"
+                  aria-label={lang === "id" ? "Tambah hari cuti" : "Add leave days"}
                   onClick={() => setDays((d) => clampDays(d + 1))}
                   disabled={days >= 21}
                   className="grid w-12 place-items-center rounded-xl border-2 border-plum-500/15 bg-white text-plum-600 shadow-sm transition-colors hover:bg-plum-500/5 disabled:opacity-40"
@@ -250,10 +250,10 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
               </div>
             </div>
 
-            {/* Tanggal mulai */}
+            {/* Start date */}
             <div>
               <label htmlFor="start-date" className="mb-1.5 block text-sm font-bold text-night-800">
-                Tanggal Mulai
+                {t.startDate}
               </label>
               <input
                 id="start-date"
@@ -269,10 +269,10 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
             {/* Gaya perjalanan */}
             <div className="md:col-span-2">
               <span id="lbl-style" className="mb-1.5 block text-sm font-bold text-night-800">
-                Gaya Perjalanan
+                {t.style}
               </span>
               <div role="radiogroup" aria-labelledby="lbl-style" className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                {STYLES.map((s) => (
+                {styleOptions.map((s) => (
                   <button
                     key={s.id}
                     type="button"
@@ -296,10 +296,11 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
 
             <CityAutocomplete
               id="origin"
-              label="Kota Asal"
+              label={t.origin}
               value={originText}
-              placeholder="Mis. Jakarta"
+              placeholder={lang === "id" ? "Mis. Jakarta" : "e.g. Jakarta"}
               invalid={!!errors.origin}
+              lang={lang}
               onChange={(v, city) => {
                 setOriginText(v);
                 setOriginCity(city);
@@ -312,10 +313,11 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
                   <div className="min-w-0 flex-1">
                     <CityAutocomplete
                       id="destination-add"
-                      label="Kota Tujuan (bisa lebih dari satu)"
+                      label={t.destinationMulticity}
                       value={addText}
-                      placeholder="Ketik kota apa pun lalu tekan Tambah — mis. Gili Trawangan…"
+                      placeholder={t.destinationMulticityPlaceholder}
                       invalid={!!errors.destination || !!addError}
+                      lang={lang}
                       onChange={(v, city) => {
                         setAddText(v);
                         setAddCity(city);
@@ -331,7 +333,7 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
                     className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-plum-600 px-4 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-plum-500 disabled:opacity-40"
                   >
                     <ListPlus className="size-4" aria-hidden />
-                    Tambah
+                    {t.addButton}
                   </button>
                 </div>
                 {addError && (
@@ -344,6 +346,7 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
                     originName={originText}
                     stops={stops}
                     invalid={!!errors.destination}
+                    lang={lang}
                     onRemove={(key) => setStops((s) => s.filter((st) => st.key !== key))}
                     onMove={moveStop}
                   />
@@ -353,17 +356,18 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
                   onClick={() => setMultiMode(false)}
                   className="mt-2.5 text-xs font-bold text-plum-600 underline-offset-2 transition-colors hover:text-plum-500 hover:underline"
                 >
-                  ← Kembali ke satu kota tujuan
+                  {t.backToSingle}
                 </button>
               </div>
             ) : (
               <div>
                 <CityAutocomplete
                   id="destination"
-                  label="Kota Tujuan"
+                  label={t.destination}
                   value={destText}
-                  placeholder="Mis. Denpasar (Bali), Tokyo, Gili Trawangan…"
+                  placeholder={t.destinationPlaceholder}
                   invalid={!!errors.destination}
+                  lang={lang}
                   onChange={(v, city) => {
                     setDestText(v);
                     setDestCity(city);
@@ -385,7 +389,7 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
                   className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-plum-600 underline-offset-2 transition-colors hover:text-plum-500 hover:underline"
                 >
                   <Route className="size-3.5" aria-hidden />
-                  Rute multi-kota (mis. Singapore → Johor Bahru → Kuala Lumpur)
+                  {t.routeMulti}
                 </button>
               </div>
             )}
@@ -404,13 +408,13 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
               {formatRange(start, end)}
             </span>
             <span className="font-medium text-night-800/65">
-              {days} hari total · {rangeInfo.workdays} hari kerja · {rangeInfo.free} hari libur
-              {rangeInfo.names.length > 0 && (
-                <span className="text-sunset-600">
-                  {" "}
-                  · termasuk {rangeInfo.names.slice(0, 2).join(" & ")}
-                </span>
-              )}
+              {formatTemplate(t.resultSummary, {
+                days,
+                workdays: rangeInfo.workdays,
+                free: rangeInfo.free,
+                holidays:
+                  rangeInfo.names.length > 0 ? ` · termasuk ${rangeInfo.names.slice(0, 2).join(" & ")}` : "",
+              })}
             </span>
           </div>
 
@@ -421,7 +425,7 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
               loading ? "btn-shimmer" : ""
             }`}
           >
-            {loading ? "Menyusun rencana terbaikmu…" : "Buat Rencana ✈️"}
+            {loading ? t.building : t.buildPlan}
           </button>
         </form>
       </div>
@@ -429,7 +433,7 @@ export default function TripForm({ onSubmit, loading, initial }: Props) {
       {/* Tanggal merah terdekat */}
       {upcomingHoliday.length > 0 && (
         <div className="mt-6 flex flex-wrap items-center gap-2 text-sm">
-          <span className="font-bold text-night-800/70">Tanggal merah terdekat:</span>
+          <span className="font-bold text-night-800/70">{t.holidayNearby}</span>
           {upcomingHoliday.map((h) => (
             <span
               key={h.date}

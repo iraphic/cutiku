@@ -1,14 +1,21 @@
 import { Palmtree } from "lucide-react";
 import { useEffect, useState } from "react";
+import { LANGUAGES, Language, TEXT } from "#/lib/i18n";
 
 const LINKS = [
-  { href: "#form", label: "Form" },
-  { href: "#hasil", label: "Hasil" },
-  { href: "#tentang", label: "Tentang" },
+  { href: "#form", labelKey: "navForm" },
+  { href: "#hasil", labelKey: "navResults" },
+  { href: "#tentang", labelKey: "navAbout" },
 ];
 
-export default function Header() {
+interface Props {
+  lang: Language;
+  onLanguageChange: (lang: Language) => void;
+}
+
+export default function Header({ lang, onLanguageChange }: Props) {
   const [scrolled, setScrolled] = useState(false);
+  const t = TEXT[lang].header;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -50,12 +57,33 @@ export default function Header() {
                       : "text-white/90 hover:bg-white/15 hover:text-white"
                   }`}
                 >
-                  {l.label}
+                  {t[l.labelKey as keyof typeof t]}
                 </a>
               </li>
             ))}
           </ul>
         </nav>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wide text-night-800/60">
+            {t.languageLabel}
+          </span>
+          {LANGUAGES.map((code) => (
+            <button
+              key={code}
+              type="button"
+              onClick={() => onLanguageChange(code)}
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                lang === code
+                  ? "bg-plum-600 text-white"
+                  : scrolled
+                  ? "text-night-800 hover:bg-sunset-50 hover:text-sunset-600"
+                  : "text-white/90 hover:bg-white/15 hover:text-white"
+              }`}
+            >
+              {t[code === "id" ? "languageId" : "languageEn"]}
+            </button>
+          ))}
+        </div>
       </div>
     </header>
   );

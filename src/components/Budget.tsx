@@ -1,6 +1,7 @@
 import { formatIDR } from "#/data/pricing";
 import type { BudgetBreakdown, HotelTier } from "#/lib/planner";
-import { chooseLegOption, tierLabel } from "#/lib/planner";
+import { chooseLegOption } from "#/lib/planner";
+import { formatTemplate, TEXT, type Language } from "#/lib/i18n";
 import { BedDouble, Info, Plane, Star, Wallet } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -8,6 +9,7 @@ interface Props {
   budget: BudgetBreakdown;
   tier: HotelTier;
   onTierChange: (t: HotelTier) => void;
+  lang: Language;
 }
 
 const TIERS: HotelTier[] = ["budget", "mid", "premium"];
@@ -42,7 +44,8 @@ function useAnimatedNumber(target: number): number {
   return value;
 }
 
-export default function Budget({ budget, tier, onTierChange }: Props) {
+export default function Budget({ budget, tier, onTierChange, lang }: Props) {
+  const t = TEXT[lang].budget;
   const total = budget.total(tier);
   const animMin = useAnimatedNumber(total.min);
   const animMax = useAnimatedNumber(total.max);
@@ -55,15 +58,8 @@ export default function Budget({ budget, tier, onTierChange }: Props) {
             <Wallet className="size-5" aria-hidden />
           </span>
           <div>
-            <h3 className="text-lg font-extrabold text-night-900">Estimasi Budget</h3>
-            <p className="text-sm text-night-800/55">
-              {budget.nights} malam menginap · per orang
-            </p>
-          </div>
-        </div>
-
-        {/* Tier tabs */}
-        <div role="tablist" aria-label="Kelas hotel" className="flex rounded-xl bg-night-900/[0.05] p-1">
+              <h3 className="text-lg font-extrabold text-night-900">{t.title}</h3>
+              <p className="text-sm text-night-800/55">{t.nights}</p>
           {TIERS.map((t) => (
             <button
               key={t}
@@ -76,7 +72,7 @@ export default function Budget({ budget, tier, onTierChange }: Props) {
                   : "text-night-800/60 hover:text-night-900"
               }`}
             >
-              {t === "budget" ? "Hemat ★★" : t === "mid" ? "Mid ★★★" : "Premium ★★★★+"}
+              {TEXT[lang].budget.hotelTier[t]}
             </button>
           ))}
         </div>
@@ -154,7 +150,7 @@ export default function Budget({ budget, tier, onTierChange }: Props) {
                               )}
                               {isChosen && (
                                 <span className="ml-1.5 rounded-full bg-emerald-600 px-1.5 py-0.5 text-[10px] font-extrabold text-white">
-                                  dipakai di total
+                                  {t.transportSelectedTag}
                                 </span>
                               )}
                             </span>
@@ -170,19 +166,17 @@ export default function Budget({ budget, tier, onTierChange }: Props) {
               })}
             </ul>
             <p className="bg-sky-50 px-4 py-2 text-xs font-medium text-sky-800">
-              {tier === "budget"
-                ? "💡 Kelas Hemat: total memakai opsi transport termurah tiap leg — kereta, bus, atau feri bila tersedia."
-                : "💡 Kelas ini memprioritaskan pesawat/moda tercepat tiap leg; alternatif darat/laut tetap tersedia."}
+              {tier === "budget" ? t.transportNoteBudget : t.transportNotePremium}
             </p>
           </div>
         )}
 
         <table className="w-full text-sm">
-          <caption className="sr-only">Rincian estimasi biaya perjalanan</caption>
+          <caption className="sr-only">{t.tableCaption}</caption>
           <thead>
             <tr className="border-b border-night-800/10 text-left text-xs tracking-wide text-night-800/50 uppercase">
-              <th scope="col" className="py-2 pr-2 font-bold">Komponen</th>
-              <th scope="col" className="py-2 pl-2 text-right font-bold">Estimasi</th>
+              <th scope="col" className="py-2 pr-2 font-bold">{t.tableComponent}</th>
+              <th scope="col" className="py-2 pl-2 text-right font-bold">{t.tableEstimate}</th>
             </tr>
           </thead>
           <tbody>
@@ -203,16 +197,15 @@ export default function Budget({ budget, tier, onTierChange }: Props) {
 
         {budget.ground && (
           <p className="mt-3 rounded-xl bg-sky-50 px-4 py-2.5 text-sm font-medium text-sky-800">
-            💡 Alternatif hemat: {budget.ground.label} sekitar{" "}
-            <strong>
-              {formatIDR(budget.ground.price[0])} – {formatIDR(budget.ground.price[1])}
-            </strong>{" "}
-            untuk rute dekat ini.
+            {formatTemplate(t.groundHint, {
+              label: budget.ground.label,
+              price: `${formatIDR(budget.ground.price[0])} – ${formatIDR(budget.ground.price[1])}`,
+            })}
           </p>
         )}
 
         <div className="mt-5 rounded-2xl bg-gradient-to-r from-sunset-500 to-plum-600 p-5 text-white">
-          <p className="text-sm font-semibold text-white/80">Total estimasi per orang</p>
+          <p className="text-sm font-semibold text-white/80">{t.totalLabel}</p>
           <p className="mt-1 text-2xl font-extrabold tracking-tight tabular-nums sm:text-3xl">
             {formatIDR(animMin)} – {formatIDR(animMax)}
           </p>
