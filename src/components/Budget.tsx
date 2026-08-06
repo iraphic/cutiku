@@ -91,14 +91,20 @@ export default function Budget({ budget, tier, onTierChange, lang }: Props) {
                   <span className="flex items-center gap-2">
                     <BedDouble className="size-4 shrink-0" aria-hidden />
                     <span>
-                      {h.city} — {tierLabel(tier)}: {formatIDR(h.perNight[tier])}/malam × {h.nights}{" "}
-                      malam
+                      {formatTemplate(t.hotelLineCity, {
+                        tier: TEXT[lang].budget.hotelTier[tier],
+                        city: h.city,
+                        nights: h.nights,
+                      })}
                     </span>
                   </span>
                   {h.suggestion && (
                     <span className="mt-1 flex items-center gap-1.5 pl-6 text-xs font-bold text-plum-600">
                       <Star className="size-3.5 shrink-0 fill-amber-400 text-amber-400" aria-hidden />
-                      Rekomendasi: {h.suggestion.name} ({h.suggestion.stars}★)
+                      {formatTemplate(t.defaultHotel, {
+                        name: h.suggestion.name,
+                        stars: h.suggestion.stars,
+                      })}
                     </span>
                   )}
                 </div>
@@ -108,12 +114,19 @@ export default function Budget({ budget, tier, onTierChange, lang }: Props) {
           <div className="mb-4 rounded-xl bg-plum-500/[0.07] px-4 py-2.5 text-sm font-semibold text-plum-700">
             <span className="flex items-center gap-2">
               <BedDouble className="size-4 shrink-0" aria-hidden />
-              {tierLabel(tier)}: {formatIDR(budget.hotelPerNight[tier])}/malam × {budget.nights} malam
+              {formatTemplate(t.hotelPerNight, {
+                label: TEXT[lang].budget.hotelTier[tier],
+                price: formatIDR(budget.hotelPerNight[tier]),
+                nights: budget.nights,
+              })}
             </span>
             {budget.hotelSuggestion && (
               <span className="mt-1 flex items-center gap-1.5 pl-6 text-xs font-bold text-plum-600">
                 <Star className="size-3.5 shrink-0 fill-amber-400 text-amber-400" aria-hidden />
-                Rekomendasi: {budget.hotelSuggestion.name} ({budget.hotelSuggestion.stars}★)
+                {formatTemplate(t.defaultHotel, {
+                  name: budget.hotelSuggestion.name,
+                  stars: budget.hotelSuggestion.stars,
+                })}
               </span>
             )}
           </div>
@@ -123,7 +136,7 @@ export default function Budget({ budget, tier, onTierChange, lang }: Props) {
           <div className="mb-4 overflow-hidden rounded-2xl border border-night-800/8">
             <p className="flex items-center gap-2 border-b border-night-800/8 bg-night-900/[0.03] px-4 py-2.5 text-xs font-extrabold tracking-wide text-night-800/70 uppercase">
               <Plane className="size-4 text-sunset-500" aria-hidden />
-              Opsi transportasi per leg rute
+              {t.transportHeader}
             </p>
             <ul className="divide-y divide-night-800/[0.06]">
               {budget.legs.map((leg) => {
@@ -213,8 +226,7 @@ export default function Budget({ budget, tier, onTierChange, lang }: Props) {
 
         <p className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-night-800/50">
           <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-          Estimasi simulasi berdasarkan rata-rata harga OTA dan referensi publik. Harga aktual
-          bervariasi tergantung musim, maskapai, dan waktu pemesanan.
+          {t.footerNote}
         </p>
       </div>
     </div>

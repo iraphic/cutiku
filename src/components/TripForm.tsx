@@ -298,7 +298,7 @@ export default function TripForm({ onSubmit, loading, initial, lang }: Props) {
               id="origin"
               label={t.origin}
               value={originText}
-              placeholder={lang === "id" ? "Mis. Jakarta" : "e.g. Jakarta"}
+              placeholder={t.originPlaceholder}
               invalid={!!errors.origin}
               lang={lang}
               onChange={(v, city) => {

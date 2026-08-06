@@ -224,7 +224,7 @@ export default function Itinerary({ segments, cityName, lang, onSwap }: Props) {
               <h3 className="text-base font-extrabold text-night-900 sm:text-lg">{seg.city}</h3>
               <p className="text-xs font-medium text-night-800/55 sm:text-sm">
                 {seg.profile.tagline} · {seg.days.filter((d) => !d.transit).length} hari
-                {seg.days.some((d) => d.transit) && " + 1 hari transit"}
+                {seg.days.some((d) => d.transit) && formatTemplate(t.transitDaySuffix, { count: seg.days.filter((d) => d.transit).length })}
               </p>
             </div>
           </div>

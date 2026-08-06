@@ -233,7 +233,7 @@ function App() {
                     className="inline-flex items-center gap-2 rounded-full bg-night-900 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:bg-night-800 disabled:bg-emerald-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-night-900"
                   >
                     <Save className="size-4" aria-hidden />
-                    {justSaved ? "Tersimpan ✓" : "Simpan Rencana"}
+                    {justSaved ? TEXT[lang].savedPlans.saveSuccess : TEXT[lang].savedPlans.saveButton}
                   </button>
                 </div>
                 <Itinerary segments={segments} cityName={plan.profile.city} lang={lang} onSwap={handleSwap} />

@@ -46,6 +46,14 @@ export const TEXT: Record<Language, {
     destinationDifferent: string;
     sameOriginStop: string;
     duplicateStop: string;
+    route: {
+      originFallback: string;
+      returnSuffix: string;
+      emptyHint: string;
+      moveEarlier: string;
+      moveLater: string;
+      removeFromRoute: string;
+    };
   };
   dateOptions: {
     userChoice: string;
@@ -62,6 +70,10 @@ export const TEXT: Record<Language, {
     mealDetail: string;
     ticketLabel: string;
     transitTag: string;
+    transitDaySuffix: string;
+    singleCityTitle: string;
+    multiCityTitle: string;
+    multiCitySubtitle: string;
   };
   budget: {
     title: string;
@@ -73,10 +85,24 @@ export const TEXT: Record<Language, {
     };
     hotelRecommendation: string;
     transportHeader: string;
+    transportSelectedTag: string;
     transportNoteBudget: string;
     transportNotePremium: string;
+    flightLabelSingle: string;
+    flightLabelMulti: string;
+    hotelLine: string;
+    hotelLineCity: string;
+    mealsLine: string;
+    mealsLineCity: string;
+    localTransportLine: string;
+    localTransportLineCity: string;
+    attractionTicketsLine: string;
+    emergencyFundLine: string;
     totalLabel: string;
     footerNote: string;
+    tableCaption: string;
+    tableComponent: string;
+    tableEstimate: string;
     hotelPerNight: string;
     emergencyFund: string;
     defaultHotel: string;
@@ -87,6 +113,7 @@ export const TEXT: Record<Language, {
     savedOn: string;
     removeLabel: string;
     saveButton: string;
+    saveSuccess: string;
     savedCount: string;
   };
   footer: {
@@ -228,6 +255,9 @@ export const TEXT: Record<Language, {
       hotelPerNight: "{label}: {price}/malam × {nights} malam",
       emergencyFund: "Dana darurat (10%)",
       defaultHotel: "Rekomendasi: {name} ({stars}★)",
+      tableCaption: "Rincian komponen budget",
+      tableComponent: "Komponen",
+      tableEstimate: "Perkiraan",
     },
     savedPlans: {
       title: "Rencana Tersimpan",
@@ -379,6 +409,9 @@ export const TEXT: Record<Language, {
       hotelPerNight: "{label}: {price}/night × {nights} nights",
       emergencyFund: "Emergency fund (10%)",
       defaultHotel: "Recommendation: {name} ({stars}★)",
+      tableCaption: "Budget component breakdown",
+      tableComponent: "Component",
+      tableEstimate: "Estimate",
     },
     savedPlans: {
       title: "Saved Plans",
