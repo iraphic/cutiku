@@ -40,7 +40,7 @@ export default function DateOptions({ options, selectedId, onSelect, lang }: Pro
               <span className="text-xs font-bold tracking-wide text-night-800/50 uppercase">
                 {opt.isUserChoice ? t.userChoice : t.suggested}
               </span>
-              {selected && <CheckCircle2 className="size-5 text-plum-600" aria-label={lang === "id" ? "Terpilih" : "Selected"} />}
+              {selected && <CheckCircle2 className="size-5 text-plum-600" aria-label={t.selected} />}
             </span>
             <span className="block text-lg font-extrabold text-night-900">
               {formatRange(opt.start, opt.end)}
@@ -52,7 +52,7 @@ export default function DateOptions({ options, selectedId, onSelect, lang }: Pro
                   {opt.totalDaysOff}
                 </span>
                 <span className="block text-[11px] font-semibold text-night-800/60">
-                  hari libur total
+                  {t.totalDaysOff}
                 </span>
               </span>
               <span className="flex-1 rounded-xl bg-plum-500/10 px-3 py-2 text-center">
@@ -60,7 +60,7 @@ export default function DateOptions({ options, selectedId, onSelect, lang }: Pro
                   {opt.leaveDaysUsed}
                 </span>
                 <span className="block text-[11px] font-semibold text-night-800/60">
-                  hari cuti dipakai
+                  {t.leaveDaysUsed}
                 </span>
               </span>
             </span>

@@ -215,7 +215,7 @@ export default function TripForm({ onSubmit, loading, initial, lang }: Props) {
               <div className="flex items-stretch gap-2">
                 <button
                   type="button"
-                  aria-label={lang === "id" ? "Kurangi hari cuti" : "Reduce leave days"}
+                  aria-label={t.decreaseLeaveDays}
                   onClick={() => setDays((d) => clampDays(d - 1))}
                   disabled={days <= 1}
                   className="grid w-12 place-items-center rounded-xl border-2 border-plum-500/15 bg-white text-plum-600 shadow-sm transition-colors hover:bg-plum-500/5 disabled:opacity-40"
@@ -240,7 +240,7 @@ export default function TripForm({ onSubmit, loading, initial, lang }: Props) {
                 </div>
                 <button
                   type="button"
-                  aria-label={lang === "id" ? "Tambah hari cuti" : "Add leave days"}
+                  aria-label={t.increaseLeaveDays}
                   onClick={() => setDays((d) => clampDays(d + 1))}
                   disabled={days >= 21}
                   className="grid w-12 place-items-center rounded-xl border-2 border-plum-500/15 bg-white text-plum-600 shadow-sm transition-colors hover:bg-plum-500/5 disabled:opacity-40"

@@ -949,10 +949,10 @@ export function itinerarySegmentsFor(plan: TripPlan, option: DateOption): Itiner
   );
 }
 
-export function budgetFor(plan: TripPlan, option: DateOption): BudgetBreakdown {
+export function budgetFor(plan: TripPlan, option: DateOption, lang: Language): BudgetBreakdown {
   const it = itineraryFor(plan, option);
   if (plan.profiles && plan.allocations && plan.input.route) {
-    return buildMultiCityBudget(plan.input.origin, plan.input.route, plan.allocations, it);
+    return buildMultiCityBudget(plan.input.origin, plan.input.route, plan.allocations, it, lang);
   }
   return estimateBudget(
     plan.input.origin,
@@ -960,6 +960,7 @@ export function budgetFor(plan: TripPlan, option: DateOption): BudgetBreakdown {
     plan.input.destinationCountry,
     plan.input.days,
     it,
+    lang,
   );
 }
 
