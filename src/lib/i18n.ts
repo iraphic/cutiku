@@ -31,6 +31,8 @@ export const TEXT: Record<Language, {
     dayLabel: string;
     startDate: string;
     style: string;
+    decreaseLeaveDays: string;
+    increaseLeaveDays: string;
     origin: string;
     destination: string;
     destinationMulticity: string;
@@ -58,6 +60,7 @@ export const TEXT: Record<Language, {
   dateOptions: {
     userChoice: string;
     suggested: string;
+    selected: string;
     totalDaysOff: string;
     leaveDaysUsed: string;
     holidaysMore: string;
@@ -111,6 +114,7 @@ export const TEXT: Record<Language, {
     title: string;
     empty: string;
     savedOn: string;
+    dateLocale: string;
     removeLabel: string;
     saveButton: string;
     saveSuccess: string;
@@ -157,6 +161,8 @@ export const TEXT: Record<Language, {
       dayLabel: "hari",
       startDate: "Tanggal Mulai",
       style: "Gaya Perjalanan",
+      decreaseLeaveDays: "Kurangi hari cuti",
+      increaseLeaveDays: "Tambah hari cuti",
       styleOptions: {
         santai: "Santai",
         padat: "Padat",
@@ -202,6 +208,7 @@ export const TEXT: Record<Language, {
     dateOptions: {
       userChoice: "Tanggal Pilihanmu",
       suggested: "Usulan CutiKu",
+      selected: "Terpilih",
       sectionTitle: "Usulan Tanggal Terbaik",
       sectionSubtitle: "Berdasarkan kalender libur nasional Indonesia 2025–2026. Klik kartu untuk memilih.",
       totalDaysOff: "hari libur total",
@@ -315,6 +322,8 @@ export const TEXT: Record<Language, {
       dayLabel: "days",
       startDate: "Start Date",
       style: "Travel Style",
+      decreaseLeaveDays: "Reduce leave days",
+      increaseLeaveDays: "Add leave days",
       styleOptions: {
         santai: "Relaxed",
         padat: "Balanced",
@@ -360,6 +369,7 @@ export const TEXT: Record<Language, {
     dateOptions: {
       userChoice: "Your Chosen Dates",
       suggested: "CutiKu Suggested",
+      selected: "Selected",
       sectionTitle: "Best Date Suggestions",
       sectionSubtitle: "Based on the Indonesian national holiday calendar 2025–2026. Tap a card to select.",
       totalDaysOff: "total leave days",
@@ -418,6 +428,7 @@ export const TEXT: Record<Language, {
       empty:
         "No saved plans yet. Create one and click “Save Plan” — stored securely in your browser.",
       savedOn: "Saved {date}",
+      dateLocale: "en-US",
       removeLabel: "Delete plan {label}",
       saveButton: "Save Plan",
       saveSuccess: "Saved ✓",

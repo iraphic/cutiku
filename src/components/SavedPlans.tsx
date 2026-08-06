@@ -52,7 +52,7 @@ export default function SavedPlans({ plans, onLoad, onDelete, lang }: Props) {
                     <span className="block truncate">{p.label}</span>
                     <span className="block text-xs font-medium text-night-800/50">
                       {formatTemplate(t.savedOn, {
-                        date: new Date(p.createdAt).toLocaleDateString(lang === "id" ? "id-ID" : "en-US"),
+                        date: new Date(p.createdAt).toLocaleDateString(t.dateLocale),
                       })}
                     </span>
                   </button>
