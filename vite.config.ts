@@ -3,11 +3,18 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
+const isVercel = !!process.env.VERCEL;
+
 export default defineConfig({
   resolve: {
     alias: {
       "#": "/src",
     },
   },
-  plugins: [react(), tailwindcss(), cloudflare()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    // Only include Cloudflare plugin when NOT building on Vercel
+    ...(isVercel ? [] : [cloudflare()]),
+  ],
 });
