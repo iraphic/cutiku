@@ -609,7 +609,8 @@ export function estimateBudget(
     flight,
     ground: groundJittered,
     hotelPerNight,
-    hotelSuggestion: getProfile(destinationName).hotels.find((s) => s.tier === tier),
+    // Default hotel suggestion (choose mid if no tier context available)
+    hotelSuggestion: getProfile(destinationName).hotels.find((s) => s.tier === "mid"),
     nights,
     meals,
     localTransport,
