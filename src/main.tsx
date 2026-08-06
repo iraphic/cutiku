@@ -66,8 +66,8 @@ function App() {
   );
 
   const budget = useMemo(
-    () => (plan && selectedOption ? budgetFor(plan, selectedOption) : null),
-    [plan, selectedOption],
+    () => (plan && selectedOption ? budgetFor(plan, selectedOption, lang) : null),
+    [plan, selectedOption, lang],
   );
 
   const scrollToResults = () => {

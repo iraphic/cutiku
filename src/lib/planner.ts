@@ -543,6 +543,7 @@ export function estimateBudget(
   destinationCountry: string,
   days: number,
   itinerary: ItineraryDay[],
+  lang: Language,
 ): BudgetBreakdown {
   const pricing = getPricing(destinationName, destinationCountry, origin.name);
   const band = getBand(destinationName, destinationCountry, origin.name);
@@ -610,20 +611,21 @@ export function estimateBudget(
   const rows = (tier: HotelTier) => {
     const hc = hotelCost(tier);
     const legCost = chooseLegCost(tier);
-    const flightLabel = legs?.[0]
-      ? `Transport PP — ${chooseLegOption(legs[0], tier)?.label ?? "transport"} (${origin.name} ⇄ ${destinationName})`
-      : `Transport PP — pesawat (${origin.name} ⇄ ${destinationName})`;
+    const flightRoute = legs?.[0]
+      ? chooseLegOption(legs[0], tier)?.label ?? TEXT[lang].budget.transportSelectedTag
+      : `${origin.name} ⇄ ${destinationName}`;
+    const flightLabel = formatTemplate(TEXT[lang].budget.flightLabelSingle, { route: flightRoute });
     const base: BudgetRow[] = [
       { label: flightLabel, min: legCost[0], max: legCost[1] },
-      { label: `Hotel ${tierLabel(tier)} — ${nights} malam`, min: hc, max: hc },
-      { label: `Makan — ${days} hari`, min: meals[0], max: meals[1] },
-      { label: "Transport lokal", min: localTransport[0], max: localTransport[1] },
-      { label: "Tiket atraksi (sesuai itinerary)", min: attractionTickets, max: attractionTickets },
+      { label: formatTemplate(TEXT[lang].budget.hotelLine, { tier: TEXT[lang].budget.hotelTier[tier], nights }), min: hc, max: hc },
+      { label: formatTemplate(TEXT[lang].budget.mealsLine, { days }), min: meals[0], max: meals[1] },
+      { label: TEXT[lang].budget.localTransportLine, min: localTransport[0], max: localTransport[1] },
+      { label: TEXT[lang].budget.attractionTicketsLine, min: attractionTickets, max: attractionTickets },
     ];
     const subMin = base.reduce((s, r) => s + r.min, 0);
     const subMax = base.reduce((s, r) => s + r.max, 0);
     base.push({
-      label: "Dana darurat (10%)",
+      label: TEXT[lang].budget.emergencyFundLine,
       min: Math.round(subMin * bufferRate),
       max: Math.round(subMax * bufferRate),
     });
@@ -664,6 +666,7 @@ function buildMultiCityBudget(
   route: RouteCity[],
   allocations: number[],
   itinerary: ItineraryDay[],
+  lang: Language,
 ): BudgetBreakdown {
   const routeNames = route.map((r) => r.name);
   const legs: LegCost[] = [];
@@ -699,7 +702,11 @@ function buildMultiCityBudget(
     hotels
       .filter((h) => h.nights > 0)
       .map((h) => ({
-        label: `Hotel ${tierLabel(tier)} di ${h.city} — ${h.nights} malam`,
+        label: formatTemplate(TEXT[lang].budget.hotelLineCity, {
+          tier: TEXT[lang].budget.hotelTier[tier],
+          city: h.city,
+          nights: h.nights,
+        }),
         min: h.perNight[tier] * h.nights,
         max: h.perNight[tier] * h.nights,
       }));
@@ -708,7 +715,7 @@ function buildMultiCityBudget(
     const pricing = getPricing(r.name, r.country, origin.name);
     const seed = `${origin.name}->${r.name}`;
     return {
-      label: `Makan di ${r.name} — ${allocations[i]} hari`,
+      label: formatTemplate(TEXT[lang].budget.mealsLineCity, { city: r.name, days: allocations[i] }),
       min: jitter(seed + "m0", pricing.meals[0] * allocations[i]),
       max: jitter(seed + "m1", pricing.meals[1] * allocations[i]),
     };
@@ -718,7 +725,7 @@ function buildMultiCityBudget(
     const pricing = getPricing(r.name, r.country, origin.name);
     const seed = `${origin.name}->${r.name}`;
     return {
-      label: `Transport lokal di ${r.name}`,
+      label: formatTemplate(TEXT[lang].budget.localTransportLineCity, { city: r.name }),
       min: jitter(seed + "t0", pricing.localTransport[0] * allocations[i]),
       max: jitter(seed + "t1", pricing.localTransport[1] * allocations[i]),
     };
@@ -740,7 +747,7 @@ function buildMultiCityBudget(
       ...legs.map((leg) => {
         const chosen = chooseLegOption(leg, tier);
         return {
-          label: `${leg.from} → ${leg.to} — ${chosen?.label ?? "transport"}`,
+          label: `${leg.from} → ${leg.to} — ${chosen?.label ?? TEXT[lang].budget.transportSelectedTag}`,
           min: chosen?.price[0] ?? 0,
           max: chosen?.price[1] ?? 0,
         };
@@ -748,12 +755,12 @@ function buildMultiCityBudget(
       ...hotelRows(tier),
       ...mealsRows,
       ...localRows,
-      { label: "Tiket atraksi (sesuai itinerary)", min: attractionTickets, max: attractionTickets },
+      { label: TEXT[lang].budget.attractionTicketsLine, min: attractionTickets, max: attractionTickets },
     ];
     const subMin = rows.reduce((s, r) => s + r.min, 0);
     const subMax = rows.reduce((s, r) => s + r.max, 0);
     rows.push({
-      label: "Dana darurat (10%)",
+      label: TEXT[lang].budget.emergencyFundLine,
       min: Math.round(subMin * bufferRate),
       max: Math.round(subMax * bufferRate),
     });
