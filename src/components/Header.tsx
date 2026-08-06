@@ -1,6 +1,6 @@
 import { Palmtree } from "lucide-react";
 import { useEffect, useState } from "react";
-import { LANGUAGES, Language, TEXT } from "#/lib/i18n";
+import { LANGUAGES, TEXT, type Language } from "#/lib/i18n";
 
 const LINKS = [
   { href: "#form", labelKey: "navForm" },

@@ -58,23 +58,26 @@ export default function Budget({ budget, tier, onTierChange, lang }: Props) {
             <Wallet className="size-5" aria-hidden />
           </span>
           <div>
-              <h3 className="text-lg font-extrabold text-night-900">{t.title}</h3>
-              <p className="text-sm text-night-800/55">{t.nights}</p>
-          {TIERS.map((t) => (
-            <button
-              key={t}
-              role="tab"
-              aria-selected={tier === t}
-              onClick={() => onTierChange(t)}
-              className={`rounded-lg px-3.5 py-2 text-xs font-bold transition-all sm:text-sm ${
-                tier === t
-                  ? "bg-white text-plum-700 shadow-md"
-                  : "text-night-800/60 hover:text-night-900"
-              }`}
-            >
-              {TEXT[lang].budget.hotelTier[t]}
-            </button>
-          ))}
+            <h3 className="text-lg font-extrabold text-night-900">{t.title}</h3>
+            <p className="text-sm text-night-800/55">{t.nights}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {TIERS.map((tierOption) => (
+                <button
+                  key={tierOption}
+                  role="tab"
+                  aria-selected={tier === tierOption}
+                  onClick={() => onTierChange(tierOption)}
+                  className={`rounded-lg px-3.5 py-2 text-xs font-bold transition-all sm:text-sm ${
+                    tier === tierOption
+                      ? "bg-white text-plum-700 shadow-md"
+                      : "text-night-800/60 hover:text-night-900"
+                  }`}
+                >
+                  {TEXT[lang].budget.hotelTier[tierOption]}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
